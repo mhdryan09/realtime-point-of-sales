@@ -6,7 +6,6 @@ import { AuthFormState } from "@/types/auth";
 import { loginSchemaForm } from "@/validations/auth-validation";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 
 export async function login(
   prevState: AuthFormState,
@@ -26,7 +25,10 @@ export async function login(
   if (!validatedFields.success) {
     return {
       status: "error",
-      errors: validatedFields.error.flatten().fieldErrors,
+      errors: {
+        ...validatedFields.error.flatten().fieldErrors,
+        _form: [],
+      },
     };
   }
 
@@ -69,5 +71,14 @@ export async function login(
   }
 
   revalidatePath("/", "layout");
-  redirect("/");
+
+  // return success status instead of redirect
+  return {
+    status: "success",
+    errors: {
+      email: [],
+      password: [],
+      _form: [],
+    },
+  };
 }

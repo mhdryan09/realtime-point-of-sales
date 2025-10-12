@@ -20,8 +20,11 @@ import { startTransition, useActionState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { login } from "../actions";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
+  const router = useRouter();
   const form = useForm<LoginForm>({
     resolver: zodResolver(loginSchemaForm),
     defaultValues: INITIAL_LOGIN_FORM,
@@ -49,13 +52,24 @@ export default function Login() {
 
   useEffect(() => {
     if (loginState?.status === "error") {
+      toast.error("Login Failed", {
+        description: loginState.errors?._form?.[0],
+        position: "top-center",
+      });
       startTransition(() => {
         loginAction(null);
       });
+    } else if (loginState?.status === "success") {
+      toast.success("Login Successful", {
+        description: "Redirecting to dashboard...",
+        position: "top-center",
+      });
+      // Redirect to dashboard after successful login
+      setTimeout(() => {
+        router.push("/");
+      }, 1000);
     }
-  }, [loginState]);
-
-  console.log("login", loginState);
+  }, [loginState, router]);
 
   return (
     <Card>

@@ -9,3 +9,10 @@ export type AuthFormState = {
     _form?: string[]; // bersifat general
   };
 };
+
+export type Profile = {
+  id?: string;
+  name?: string;
+  avatar_url?: string;
+  role?: string;
+};
